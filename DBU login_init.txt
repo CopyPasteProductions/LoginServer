@@ -1,0 +1,68 @@
+GO
+
+/****** Object:  Table [dbo].[Users]    Script Date: 9/19/2015 11:54:49 PM ******/
+DROP TABLE [dbo].[Users]
+GO
+
+/****** Object:  Table [dbo].[Users]    Script Date: 9/19/2015 11:54:49 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[Users](
+	[UserId] [int] IDENTITY(1,1) NOT NULL,
+	[UserName] [varchar](50) NOT NULL,
+	[HashedPassword] [varchar](max) NOT NULL,
+	[Email] [varchar](max) NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+
+GO
+
+/****** Object:  StoredProcedure [dbo].[AddUser]    Script Date: 9/19/2015 11:57:12 PM ******/
+DROP PROCEDURE [dbo].[AddUser]
+GO
+
+/****** Object:  StoredProcedure [dbo].[AddUser]    Script Date: 9/19/2015 11:57:12 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+CREATE PROCEDURE [dbo].[AddUser] 
+	-- Add the parameters for the stored procedure here
+	@UserName varchar(50),
+	@HashedPassword varchar(max),
+	@Email varchar(max)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+if not EXISTS( select userName from users where userName = @UserName)
+Begin
+	INSERT INTO [dbo].[Users]
+			   ([UserName]
+			   ,[HashedPassword]
+			   ,[Email])
+		 VALUES
+			   (@UserName 
+			   ,@HashedPassword
+			   ,@Email )
+END
+
+END
