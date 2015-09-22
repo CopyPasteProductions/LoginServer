@@ -18,10 +18,12 @@ public LoginResponse root(String a)
 }
 
 
-@RequestMapping("/login/test")
-public LoginResponse test2(String a)
+@RequestMapping("/login/getUser")
+public LoginResponse test2(String userName)
 {
-	User u = new UserDaoImpl().getUser(a);
+	User u = new UserDaoImpl().getUser(userName);
+	boolean success = true;
+	success =  (u.getUserName() != null);
 	return new LoginResponse(u);
 }
 

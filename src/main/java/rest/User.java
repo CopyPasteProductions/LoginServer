@@ -2,6 +2,17 @@ package rest;
 
 public class User {
 	
+	
+	private int userId;
+	
+	private String userName;
+	
+	private String hashedPassword;
+	
+	private String email;
+	
+	private boolean validUser;
+	
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
@@ -18,13 +29,6 @@ public class User {
 		this.email = email;
 	}
 
-	private int userId;
-	
-	private String userName;
-	
-	private String hashedPassword;
-	
-	private String email;
 	
 
 	public User(int userId, String userName, String hashedPassword, String email) {

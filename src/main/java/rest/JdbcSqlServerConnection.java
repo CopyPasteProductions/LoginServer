@@ -1,9 +1,17 @@
 package rest;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
  
 /**
  * This program demonstrates how to establish database connection to Microsoft
@@ -11,8 +19,12 @@ import java.sql.SQLException;
  * @author www.codejava.net
  *
  */
-public class JdbcSqlServerConnection {
+
+
+public class JdbcSqlServerConnection  {
  
+
+	
 		public JdbcSqlServerConnection()
 		{
 		}
@@ -22,10 +34,11 @@ public class JdbcSqlServerConnection {
         Connection conn = null;
  
         try {
- 
-            String dbURL = "jdbc:sqlserver://CPPTest.mssql.somee.com";
-            String user = "bullsfan127_SQLLogin_1";
-            String pass = "xnq2ciyn5u";
+        	
+
+            String dbURL = "jdbc:sqlserver://";
+            String user = "";
+            String pass = "";
 
             conn = DriverManager.getConnection(dbURL, user, pass);
             
