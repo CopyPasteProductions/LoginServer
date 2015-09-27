@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import rest.domain.GenericResponse;
+
 public class UserDaoImpl implements UserDao {
 
 	private Connection con;
@@ -14,25 +16,37 @@ public class UserDaoImpl implements UserDao {
 		con = new JdbcSqlServerConnection().ConnectToDb();
 	}
 
-	public boolean addUser( String userName, String hashPass, String email) {
+	public GenericResponse addUser( String userName, String hashPass, String email) {
 
-		boolean rv = true;
+		boolean success = false;
+		String message = "";
 		try {
-			String SPsql = "EXEC AddUser ?,?,?";   // for stored proc 
-			PreparedStatement ps = con.prepareStatement(SPsql);
-			ps.setEscapeProcessing(true);
-			ps.setQueryTimeout(20);
-			ps.setString(1, userName);
-			ps.setString(2, hashPass);
-			ps.setString(3, email);
-			ps.executeUpdate();
+			if (getUser(userName).getUserId() != -1 )
+			{
+				message = "User Already Exists!";
+				success = false;
+				
+			}
+			else
+			{
+				String SPsql = "EXEC AddUser ?,?,?";   // for stored proc 
+				PreparedStatement ps = con.prepareStatement(SPsql);
+				ps.setEscapeProcessing(true);
+				ps.setQueryTimeout(20);
+				ps.setString(1, userName);
+				ps.setString(2, hashPass);
+				ps.setString(3, email);
+				ps.executeUpdate();
+				success = true;
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			rv = false;
+			success = false;
+			message  = e.getMessage();
 		}
 		
-		return rv;
+		return new GenericResponse(success, message);
 	}
 
 	public User getUser(String userName) {
@@ -53,6 +67,54 @@ public class UserDaoImpl implements UserDao {
 			
 		}
 		return u;
+	}
+	
+	public GenericResponse login(String userName, String password)
+	{
+		boolean success = false;
+		String message = "";
+		int userId = -1;
+		try {
+			if (getUser(userName).getUserId() == -1 )
+			{
+				message = "User Already Exists!";
+				success = false;
+				
+			}
+			
+			else
+			{
+				String SPsql = "EXEC LoginUser ?,?";   // for stored proc 
+				PreparedStatement ps = con.prepareStatement(SPsql);
+				ps.setEscapeProcessing(true);
+				ps.setQueryTimeout(20);
+				ps.setString(1, userName);
+				ps.setString(2, password);
+
+				ps.executeUpdate();			
+
+				ResultSet rs = ps.executeQuery();
+				if (rs.getRow() == 0 )
+				{
+					message = "Login Failed.";
+					success = false;
+				}
+				else
+				{
+					userId = (rs.getInt("userId"));
+					message = String.valueOf(userId);
+				}
+				success = true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			success = false;
+			message  = e.getMessage();
+		}
+		
+		return new GenericResponse(success, message);
+
 	}
 
 }

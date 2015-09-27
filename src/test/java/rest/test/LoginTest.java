@@ -10,12 +10,18 @@ import java.text.MessageFormat;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import rest.JdbcSqlServerConnection;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,6 +30,11 @@ import org.json.JSONObject;
  *
  */
 public class LoginTest {
+	
+	String userName = "Testuser2";
+	String hashedPassword = "TestPass2";
+	String email = "TestEmail2";
+	
 
 	/**
 	 * @throws java.lang.Exception
@@ -39,8 +50,9 @@ public class LoginTest {
 	public void tearDown() throws Exception {
 	}
 	
-	/*
+/*	
 	//Not working yet
+	@Test
 	public void TestAddUserJson()
 	{
 		JSONObject obj = new JSONObject();
@@ -48,12 +60,13 @@ public class LoginTest {
 		obj.put("HashedPassword", "TestPass2");
 		obj.put("email", "Testemail2");
 		
+		
 		   HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
 
 		    try {
-		        HttpPost request = new HttpPost("http://localhost:8080/login/addUser");
-		        StringEntity params =new StringEntity(obj.toJSONString());
-		        request.addHeader("content-type", "application/x-www-form-urlencoded");
+		        HttpPost request = new HttpPost("http://localhost:8080/login/addUser2");
+		        StringEntity params =new StringEntity(obj.toString());
+		        request.addHeader("content-type", "application/json");
 		        request.setEntity(params);
 		        HttpResponse response = httpClient.execute(request);
 		      //  assertTrue("Pass!", response.toString() == "Failed");
@@ -62,35 +75,34 @@ public class LoginTest {
 		    }catch (Exception ex) {
 		    	fail(ex.toString());
 		    }
-	}
-	*/
+	} */
+	
 	
 	@Test
 	public void TestAddUser()
 	{
-		String userName = "Testuser";
-		String hashedPassword = "TestPass";
-		String email = "TestEmail";
-		
-
 		//Check if user already exists
 		
 		   HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
-
+		   boolean userFound =false;
 		    try {
 				String user = getUser(userName);
 		        JSONObject jsonObject = new JSONObject(user);
-		   	 	JSONObject userJson = (JSONObject) jsonObject.get("user");
+		        userFound = jsonObject.getBoolean("success");
 		   	 	 
-		   	 	if (!jsonObject.isNull("userName"))
+		   	 	if (userFound == true)
 		   	 	{
-		   	 		assertTrue("User Already exists!", true);
+		   	 		assertTrue("User Already exists!", false);
 		   	 	}
 		   	 	else
 		   	 	{
 			    	String url = MessageFormat.format("http://localhost:8080/login/addUser?userName={0}&HashedPassword={1}&email={2}", userName,hashedPassword,email);
 			        HttpPost request = new HttpPost(url);
 			        HttpResponse response = httpClient.execute(request);
+			        String rv = EntityUtils.toString(response.getEntity());
+			        userFound = jsonObject.getBoolean("success");
+			        
+			        assertTrue("User Not Added!", userFound != true);
 		   	 	}
 
 		        // handle response here...
@@ -102,21 +114,35 @@ public class LoginTest {
 	@Test
 	public void TestGetUser()
 	{
-		String userName = "Testuser";
 		String user = getUser(userName);
         JSONObject jsonObject = new JSONObject(user);
+        boolean success =false;
         // get a String from the JSON object
         
          try {
-        	 JSONObject userJson = (JSONObject) jsonObject.get("user");
-        	 userName = userJson.getString("userName");
-			 System.out.println(userName);
+        	  success = jsonObject.getBoolean("success");
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			fail(e.toString());
 		}
          
-       assertTrue("Pass!", userName != "null");
+       assertTrue("Failed!", success == true);
+        
+	}
+	
+	@Test
+	public void TestLogin()
+	{
+		   HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead 
+
+		    try {
+			    	String url = MessageFormat.format("http://localhost:8080/login/Loginr?userName={0}&HashedPassword={1}", userName,hashedPassword);
+			        HttpPost request = new HttpPost(url);
+			        HttpResponse response = httpClient.execute(request);
+		        // handle response here...
+		    }catch (Exception ex) {
+		    	fail(ex.toString());
+		    }
         
 	}
 	

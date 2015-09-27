@@ -11,7 +11,6 @@ public class User {
 	
 	private String email;
 	
-	private boolean validUser;
 	
 	public void setUserId(int userId) {
 		this.userId = userId;
@@ -40,7 +39,7 @@ public class User {
 	}
 
 	public User() {
-		// TODO Auto-generated constructor stub
+		this.userId = -1;
 	}
 
 	public int getUserId() {

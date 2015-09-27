@@ -3,17 +3,20 @@ package rest.domain;
 import rest.User;
 
 public class LoginResponse {
-String userName = "HelloWorld";
+
+boolean success = false;
+public boolean isSuccess() {
+	return success;
+}
+
+
 private User user;
 
 
-public LoginResponse(String h1) {
-	super();
-	this.userName = h1;
-}
-public LoginResponse(User _user) {
+public LoginResponse(boolean success, User _user) {
 	super();
 	this.user = _user;
+	this.success = success;
 
 }
 
